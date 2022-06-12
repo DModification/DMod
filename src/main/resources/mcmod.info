@@ -1,0 +1,9 @@
+[
+{
+  "modid": "DMod",
+  "name": "DMod",
+  "description": "something that does stuff when certain conditions are met",
+  "version": "${version}",
+  "authorList": [""]
+}
+]

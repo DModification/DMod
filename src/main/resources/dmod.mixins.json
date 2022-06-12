@@ -1,0 +1,26 @@
+{
+  "required": true,
+  "compatibilityLevel": "JAVA_8",
+  "package": "me.dmod.mixins",
+  "refmap": "mixins.dmod.refmap.json",
+  "mixins": [
+    "IMixinAbstractTextInput",
+    "IMixinGuiScreenBook",
+    "MixinC01PacketChatMessage",
+    "MixinC17PacketCustomPayload",
+    "MixinContainerPlayer",
+    "MixinEntityPlayerSP",
+    "MixinGuiAnvil",
+    "MixinGuiChat",
+    "MixinGuiContainer",
+    "MixinGuiEditSign",
+    "MixinGuiScreenBook",
+    "MixinItemStack",
+    "MixinModList",
+    "MixinNetworkManager",
+    "MixinPacketBuffer",
+    "MixinTileEntitySignRenderer"
+  ],
+  "server": [],
+  "client": []
+}

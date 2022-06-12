@@ -1,0 +1,107 @@
+plugins {
+    id "java"
+    id "net.minecraftforge.gradle.forge" version "8708bf3e0"
+    id "org.spongepowered.mixin" version "d5f9873d60"
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id "org.jetbrains.kotlin.jvm" version "1.5.31"
+}
+
+version = "1.16.8"
+group = "me"
+
+compileJava.options.encoding = "UTF-8"
+
+minecraft {
+    version = "1.8.9-11.15.1.2318-1.8.9"
+    mappings = "stable_22"
+    runDir = "run"
+    clientJvmArgs += "-Dmixin.hotSwap=true"
+    clientRunArgs += "--mixin dmod.mixins.json"
+    clientRunArgs += "--tweakClass gg.essential.loader.stage0.EssentialSetupTweaker"
+    makeObfSourceJar = false
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "https://jitpack.io/" }
+    maven { url "https://repo.sk1er.club/repository/maven-releases/" }
+    maven { url "https://repo.spongepowered.org/repository/maven-public/" }
+    maven { url "https://repo.spongepowered.org/maven/" }
+}
+
+
+configurations {
+    include
+    implementation.extendsFrom include
+    packageLib
+    implementaton.extendsFrom packageLib
+}
+
+dependencies {
+    include "gg.essential:loader-launchwrapper:1.1.3"
+    provided "gg.essential:essential-1.8.9-forge:1759"
+    provided "org.spongepowered:mixin:0.7.11-SNAPSHOT"
+    packageLib("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+        exclude module: 'guava'
+        exclude module: 'commons-io'
+        exclude module: 'gson'
+    }
+    annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+}
+
+mixin {
+    add sourceSets.main, "mixins.dmod.refmap.json"
+}
+
+jar {
+    manifest.attributes(
+            "ForceLoadAsMod": true,
+            "TweakClass": "gg.essential.loader.stage0.EssentialSetupTweaker",
+            "ModSide": "CLIENT",
+            "MixinConfigs": "dmod.mixins.json",
+            "FMLAT": "DMod_at.cfg",
+    )
+    from {
+        configurations.packageLib.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+    filesMatching("mcmod.info") {
+        expand "version": project.version, "mcversion": project.minecraft.version
+    }
+}
+
+sourceSets {
+    main {
+        output.resourcesDir = java.outputDir
+    }
+}
+
+shadowJar {
+    archiveClassifier.set("")
+    configurations = [project.configurations.include]
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+}
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+reobf {
+    shadowJar {
+        mappingType = "SEARGE"
+    }
+}
+reobfJar.dependsOn tasks.shadowJar
